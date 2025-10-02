@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Segen to go</title>
+  <meta name="description" content="Scanne den QR-Code und erhalte einen persönlichen Segensspruch." />
+  <style>
+    :root{
+      --bg1: #f8fafc;
+      --bg2: #eef2ff;
+      --ink: #0f172a;
+      --muted:#475569;
+      --brand:#4f46e5;
+      --brand-2:#7c3aed;
+      --card:#ffffff;
+      --ring: rgba(79,70,229,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--ink);
+      background: radial-gradient(1200px 600px at 10% -10%, var(--bg2), transparent),
+                  radial-gradient(1000px 400px at 110% 10%, #fae8ff, transparent),
+                  linear-gradient(180deg, var(--bg1), #ffffff);
+    }
+    .wrap{max-width:960px; margin:0 auto; padding:24px}
+    header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+    .title{font-size:clamp(1.6rem, 3.2vw, 2.4rem); font-weight:800; letter-spacing:.2px}
+    .subtitle{color:var(--muted); font-size:clamp(0.95rem, 1.3vw, 1.05rem)}
+    .logo{height:64px}
+    .card{background:var(--card); border-radius:18px; padding:22px; box-shadow:0 8px 30px rgba(2,6,23,.06); border:1px solid rgba(15,23,42,.06)}
+    .grid{display:grid; grid-template-columns:1fr; gap:18px}
+    @media(min-width:900px){ .grid{grid-template-columns: 2fr 1fr} }
+    label{font-weight:600; font-size:.95rem}
+    input[type="text"], textarea{width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(15,23,42,.12); outline:none; background:#fff; font-size:1rem; color:var(--ink)}
+    input[type="text"]:focus, textarea:focus{ box-shadow:0 0 0 4px var(--ring); border-color:var(--brand) }
+    button{ appearance:none; border:none; cursor:pointer; border-radius:12px; padding:12px 16px; font-weight:700; font-size:1rem; color:white; background:linear-gradient(135deg,var(--brand),var(--brand-2)); box-shadow:0 10px 20px rgba(79,70,229,.25)}
+    button.secondary{ background:#fff; color:var(--brand); border:1px solid rgba(79,70,229,.35); box-shadow:none }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .blessing{font-size:clamp(1.1rem, 2vw, 1.35rem); line-height:1.5; font-weight:600}
+    .hint{color:var(--muted); font-size:.95rem}
+    .badge{display:inline-flex; align-items:center; gap:6px; background:#eef2ff; color:#3730a3; font-weight:700; padding:6px 10px; border-radius:999px; font-size:.85rem}
+    .muted{color:var(--muted)}
+    .qr-box{display:flex; align-items:center; justify-content:center; background:#fff; border-radius:16px; border:1px dashed rgba(79,70,229,.4); padding:16px; min-height:160px}
+    footer{margin-top:22px; color:var(--muted); font-size:.85rem; display:flex; justify-content:space-between; align-items:center}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="title">Segen&nbsp;to&nbsp;go</div>
+        <div class="subtitle">Scanne. Lies. Nimm mit. – „Where is the Love?“ Antwort: Gott segnet dich & sendet dich, Liebe sichtbar zu machen.</div>
+      </div>
+      <img src="Gemeindelogo Regenbogen.png" alt="Gemeindelogo" class="logo" />
+    </header>
+
+    <main class="grid" style="margin-top:18px">
+      <section class="card">
+        <div class="controls" style="display:grid; gap:12px; margin-bottom:8px">
+          <div>
+            <label for="name">Name (optional)</label>
+            <input id="name" type="text" placeholder="z. B. Alex" />
+            <div class="hint">Wenn angegeben, wird der Segen persönlicher.</div>
+          </div>
+          <div class="row">
+            <button id="btn-new">Neuen Segen anzeigen</button>
+            <button id="btn-copy" class="secondary">Kopieren</button>
+            <button id="btn-share" class="secondary">Teilen</button>
+          </div>
+        </div>
+        <article id="output" class="blessing" aria-live="polite"></article>
+        <p class="muted" style="margin-top:12px">Tipp: Mit „Teilen“ erzeugst du einen Link, der denselben Segen wieder öffnet.</p>
+      </section>
+
+      <aside class="card qr">
+        <h3 style="margin:0 0 8px 0">QR-Code zum Verteilen</h3>
+        <p class="hint">1) Lade diese Datei hoch (z. B. Gemeindehomepage).<br/>2) Trage unten die Ziel‑URL ein. <br/>3) QR ausdrucken & aushängen.</p>
+        <input id="url" type="text" placeholder="https://deine-url…" />
+        <div class="row" style="margin-top:10px">
+          <button id="btn-qr">QR erzeugen</button>
+          <button id="btn-qr-dl" class="secondary">QR als PNG speichern</button>
+        </div>
+        <div id="qr" class="qr-box" style="margin-top:12px"></div>
+      </aside>
+    </main>
+
+    <footer>
+      <span class="muted">© Gemeinde – frei verwendbar in Kirche & Schule.</span>
+      <img src="Gemeindelogo Regenbogen.png" alt="Logo klein" style="height:32px" />
+    </footer>
+  </div>
+
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const params = new URLSearchParams(location.search);
+
+    function mulberry32(a){return function(){let t=a+=0x6D2B79F5; t=Math.imul(t ^ t>>>15, t | 1); t^=t+Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14)>>>0) / 4294967296}}
+
+    const blessings = [
+      "Hey {{name}}, Gott gibt dir Rückenwind – damit du nicht aufgibst, wenn’s schwer wird.",
+      "Gott sieht dich. Du bist genug. Geh raus und bring ein Stück Liebe in diese Welt.",
+      "Der Herr segne deine Augen: damit du merkst, wo andere übersehen werden.",
+      "Gott macht dein Herz weit – damit du mutig auf Leute zugehst, die allein dastehen.",
+      "Christus ist bei dir, wenn du zweifelst. Er schenkt dir Mut, trotzdem weiterzugehen.",
+      "Gott segne deinen Mund – dass du nicht schweigst, wenn jemand fertiggemacht wird.",
+      "Du bist von Gott geliebt – unverhandelbar. Und genau das macht dich frei.",
+      "Gott legt dir ein Licht ins Herz, das heller ist als jedes Dunkel um dich herum.",
+      "Der Heilige Geist füllt dich mit Kraft – und gibt dir die Worte, die gerade gebraucht werden.",
+      "Hey {{name}}, Gott vertraut dir zu: Du kannst ein Unterschied sein. Heute.",
+      "Gott schenke dir Freunde, die echt sind – und den Mut, selbst ein echter Freund zu sein.",
+      "{{name}}, vergiss nicht: Gott freut sich über dich – so wie du bist, nicht erst, wenn du perfekt bist.",
+      "Der Herr gebe dir Power für deine Träume und Gelassenheit für deine Sorgen.",
+      "Gott segne deine Hände, dass sie helfen, aufbauen, trösten – nicht zerstören.",
+      "Christus gehe mit dir in deine Schule, deine Clique, dein Zuhause – du bist nie allein.",
+      "Gott segne dein Lachen – dass es ansteckt und Hoffnung verbreitet.",
+      "Der Heilige Geist schenke dir neue Ideen, wenn du festhängst – und Ruhe, wenn alles zu viel wird.",
+      "Gott segne deine Schritte – auch wenn du Umwege gehst, er führt dich.",
+      "Hey {{name}}, Gott füllt dich mit Liebe, damit du sie weitergeben kannst – ganz praktisch, jeden Tag.",
+      "Der Herr schenke dir ein Herz, das größer ist als dein Stolz, und stärker als deine Angst.",
+      "Gott sei dein Schutz, wenn du angegriffen wirst – und deine Stärke, wenn du für andere einstehst.",
+      "Christus halte dich fest, wenn du schwankst, und schicke dir Menschen, die dich aufrichten.",
+      "Gott segne dich mit Freude, die tiefer geht als Likes und schneller ist als Sorgen.",
+      "Der Heilige Geist gebe dir Fantasie, die Welt zu verändern – Schritt für Schritt.",
+      "{{name}}, Gott segne deine Stimme – dass sie klar sagt, was gerecht und liebevoll ist.",
+      "Der Herr begleite dich – wenn du rausgehst, heimkommst und mittendrin lebst.",
+      "Gott schenke dir Augen, die Schönheit sehen, und Füße, die nicht müde werden, ihr nachzugehen.",
+    ];
+
+    function formatBlessing(tpl, name){
+      return tpl.replaceAll("{{name}}", name || "").trim();
+    }
+    function pickBlessing(seed, name){
+      const rng = mulberry32(seed);
+      const i = Math.floor(rng()*blessings.length);
+      return formatBlessing(blessings[i], name);
+    }
+    function showBlessing(fixedSeed){
+      const name = (params.get('name') || $('#name').value || '').trim();
+      const seedParam = params.get('seed');
+      const seed = fixedSeed ?? (seedParam ? parseInt(seedParam,10) : (crypto.getRandomValues(new Uint32Array(1))[0]));
+      if(!seedParam){
+        const next = new URL(location.href);
+        next.searchParams.set('seed', String(seed));
+        if(name) next.searchParams.set('name', name);
+        history.replaceState({}, '', next);
+      }
+      const text = pickBlessing(seed, name);
+      $('#output').textContent = text;
+      return { seed, name, text };
+    }
+
+    let qrInstance = null;
+    function ensureQR(){
+      const box = $('#qr');
+      box.innerHTML = '';
+      qrInstance = new QRCode(box, { text: $('#url').value || location.href, width: 200, height: 200 });
+    }
+    function downloadQR(){
+      const img = $('#qr').querySelector('img') || $('#qr').querySelector('canvas');
+      if(!img) return;
+      const link = document.createElement('a');
+      link.download = 'qr-segen.png';
+      link.href = img.src || img.toDataURL();
+      link.click();
+    }
+
+    async function copyBlessing(){
+      const txt = $('#output').textContent.trim();
+      try{ await navigator.clipboard.writeText(txt); alert('Segen kopiert.'); } catch{ alert('Bitte Text manuell markieren.'); }
+    }
+    async function shareLink(){
+      const url = location.href;
+      const title = 'Segen to go';
+      const text = $('#output').textContent.trim();
+      if(navigator.share){ try{ await navigator.share({title, text, url}); } catch(_){} }
+      else { try{ await navigator.clipboard.writeText(url); alert('Link kopiert: ' + url); } catch{ alert(url); } }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const nameFromUrl = params.get('name');
+      if(nameFromUrl) $('#name').value = nameFromUrl;
+      const seedParam = params.get('seed');
+      const initialSeed = seedParam ? parseInt(seedParam,10) : undefined;
+      showBlessing(initialSeed);
+      $('#btn-new').addEventListener('click', () => showBlessing());
+      $('#btn-copy').addEventListener('click', copyBlessing);
+      $('#btn-share').addEventListener('click', shareLink);
+      $('#url').value = location.href;
+      $('#btn-qr').addEventListener('click', ensureQR);
+      $('#btn-qr-dl').addEventListener('click', downloadQR);
+      ensureQR();
+    });
+  </script>
+</body>
+</html>
+
