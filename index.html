@@ -4,197 +4,658 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Segen to go</title>
-  <meta name="description" content="Scanne den QR-Code und erhalte einen persönlichen Segensspruch." />
+  <meta name="description" content="Segen to go – ein Online-Segenskalender, der dich durchs Jahr begleitet." />
   <style>
-    :root{
+    :root {
       --bg1: #f8fafc;
       --bg2: #eef2ff;
       --ink: #0f172a;
-      --muted:#475569;
-      --brand:#4f46e5;
-      --brand-2:#7c3aed;
-      --card:#ffffff;
-      --ring: rgba(79,70,229,.35);
+      --muted: #64748b;
+      --brand: #4f46e5;
+      --brand-2: #7c3aed;
+      --card: #ffffff;
+      --ring: rgba(79, 70, 229, 0.35);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color:var(--ink);
-      background: radial-gradient(1200px 600px at 10% -10%, var(--bg2), transparent),
-                  radial-gradient(1000px 400px at 110% 10%, #fae8ff, transparent),
-                  linear-gradient(180deg, var(--bg1), #ffffff);
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, var(--bg2), transparent),
+        radial-gradient(1000px 400px at 110% 10%, #fae8ff, transparent),
+        linear-gradient(180deg, var(--bg1), #ffffff);
     }
-    .wrap{max-width:960px; margin:0 auto; padding:24px}
-    header{display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap}
-    .title{font-size:clamp(1.6rem, 3.2vw, 2.4rem); font-weight:800; letter-spacing:.2px}
-    .subtitle{color:var(--muted); font-size:clamp(0.95rem, 1.3vw, 1.05rem)}
-    .logo{height:64px}
-    .card{background:var(--card); border-radius:18px; padding:22px; box-shadow:0 8px 30px rgba(2,6,23,.06); border:1px solid rgba(15,23,42,.06)}
-    .grid{display:grid; grid-template-columns:1fr; gap:18px}
-    @media(min-width:900px){ .grid{grid-template-columns: 2fr 1fr} }
-    label{font-weight:600; font-size:.95rem}
-    input[type="text"], textarea{width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(15,23,42,.12); outline:none; background:#fff; font-size:1rem; color:var(--ink)}
-    input[type="text"]:focus, textarea:focus{ box-shadow:0 0 0 4px var(--ring); border-color:var(--brand) }
-    button{ appearance:none; border:none; cursor:pointer; border-radius:12px; padding:12px 16px; font-weight:700; font-size:1rem; color:white; background:linear-gradient(135deg,var(--brand),var(--brand-2)); box-shadow:0 10px 20px rgba(79,70,229,.25)}
-    button.secondary{ background:#fff; color:var(--brand); border:1px solid rgba(79,70,229,.35); box-shadow:none }
-    .row{display:flex; gap:10px; flex-wrap:wrap}
-    .blessing{font-size:clamp(1.1rem, 2vw, 1.35rem); line-height:1.5; font-weight:600}
-    .hint{color:var(--muted); font-size:.95rem}
-    .badge{display:inline-flex; align-items:center; gap:6px; background:#eef2ff; color:#3730a3; font-weight:700; padding:6px 10px; border-radius:999px; font-size:.85rem}
-    .muted{color:var(--muted)}
-    .qr-box{display:flex; align-items:center; justify-content:center; background:#fff; border-radius:16px; border:1px dashed rgba(79,70,229,.4); padding:16px; min-height:160px}
-    footer{margin-top:22px; color:var(--muted); font-size:.85rem; display:flex; justify-content:space-between; align-items:center}
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+    header {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .title {
+      font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+    }
+    .logo {
+      height: 64px;
+      max-width: 140px;
+      object-fit: contain;
+    }
+    main {
+      margin-top: 24px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 22px 20px 24px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+    .view {
+      display: none;
+    }
+    .view--active {
+      display: block;
+    }
+
+    h1, h2, h3 {
+      margin: 0 0 8px;
+    }
+
+    .verse-block {
+      margin-top: 8px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(239, 246, 255, 0.9);
+      border: 1px solid rgba(129, 140, 248, 0.35);
+    }
+    .verse-text {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .verse-ref {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #4338ca;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.98rem;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: #ffffff;
+      font-size: 1rem;
+      color: var(--ink);
+      outline: none;
+      transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+    }
+    input[type="text"]:focus {
+      box-shadow: 0 0 0 4px var(--ring);
+      border-color: var(--brand);
+      transform: translateY(-1px);
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 11px 18px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 16px 30px rgba(79, 70, 229, 0.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
+      white-space: nowrap;
+    }
+    button:hover {
+      filter: brightness(1.06);
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 18px rgba(79, 70, 229, 0.35);
+    }
+    button.secondary {
+      background: #ffffff;
+      color: var(--brand);
+      border: 1px solid rgba(79, 70, 229, 0.35);
+      box-shadow: none;
+    }
+
+    .actions {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .meta {
+      font-size: 0.9rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .meta strong {
+      font-weight: 700;
+    }
+
+    .blessing-text {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    footer img {
+      height: 32px;
+      max-width: 90px;
+      object-fit: contain;
+    }
+
+    @media (min-width: 720px) {
+      .card {
+        padding: 26px 28px 28px;
+      }
+    }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div>
+      <div class="brand-block">
         <div class="title">Segen&nbsp;to&nbsp;go</div>
-        <div class="subtitle">Scanne. Lies. Nimm mit. – „Where is the Love?“ Antwort: Gott segnet dich & sendet dich, Liebe sichtbar zu machen.</div>
+        <div class="subtitle">Ein Online-Segenskalender deiner Gemeinde – fürs Jahr, für den Alltag, für dich.</div>
       </div>
       <img src="Gemeindelogo Regenbogen.png" alt="Gemeindelogo" class="logo" />
     </header>
 
-    <main class="grid" style="margin-top:18px">
-      <section class="card">
-        <div class="controls" style="display:grid; gap:12px; margin-bottom:8px">
-          <div>
-            <label for="name">Name (optional)</label>
-            <input id="name" type="text" placeholder="z. B. Alex" />
-            <div class="hint">Wenn angegeben, wird der Segen persönlicher.</div>
+    <main>
+      <!-- Seite 1: Name & Jahreslosung -->
+      <section id="view-start" class="card view view--active">
+        <h2>Willkommen bei „Segen to go“</h2>
+        <div class="verse-block">
+          <div class="verse-text">
+            <strong>Jahreslosung 2026</strong><br>
+            Gott spricht: Siehe, ich mache alles neu!
           </div>
-          <div class="row">
-            <button id="btn-new">Neuen Segen anzeigen</button>
-            <button id="btn-copy" class="secondary">Kopieren</button>
-            <button id="btn-share" class="secondary">Teilen</button>
-          </div>
+          <div class="verse-ref">Offenbarung 21,5</div>
         </div>
-        <article id="output" class="blessing" aria-live="polite"></article>
-        <p class="muted" style="margin-top:12px">Tipp: Mit „Teilen“ erzeugst du einen Link, der denselben Segen wieder öffnet.</p>
+
+        <p>Schön, dass du da bist. Dieser Kalender begleitet dich durchs Jahr – mit einem persönlichen Segenstext, passend zur Zeit.</p>
+
+        <div style="margin-top: 16px;">
+          <label for="name-input">Magst du mir deinen Namen sagen?</label>
+          <input id="name-input" type="text" placeholder="z. B. Alex" />
+          <p class="hint">Du kannst auch nur den Vornamen eingeben oder das Feld leer lassen.</p>
+        </div>
+
+        <div class="actions">
+          <button id="btn-start">
+            Weiter zum Segen
+          </button>
+        </div>
       </section>
 
-      <aside class="card qr">
-        <h3 style="margin:0 0 8px 0">QR-Code zum Verteilen</h3>
-        <p class="hint">1) Lade diese Datei hoch (z. B. Gemeindehomepage).<br/>2) Trage unten die Ziel‑URL ein. <br/>3) QR ausdrucken & aushängen.</p>
-        <input id="url" type="text" placeholder="https://deine-url…" />
-        <div class="row" style="margin-top:10px">
-          <button id="btn-qr">QR erzeugen</button>
-          <button id="btn-qr-dl" class="secondary">QR als PNG speichern</button>
+      <!-- Seite 2: Monatsspruch & Segen -->
+      <section id="view-blessing" class="card view" aria-live="polite">
+        <div class="meta">
+          <span id="month-label"><strong>Monat</strong></span>
+          <span class="badge" id="name-badge" style="display:none;">Für dich, <span id="name-badge-text"></span></span>
         </div>
-        <div id="qr" class="qr-box" style="margin-top:12px"></div>
-      </aside>
+
+        <div class="verse-block">
+          <div class="verse-text" id="month-verse-text"></div>
+          <div class="verse-ref" id="month-verse-ref"></div>
+        </div>
+
+        <div class="blessing-text" id="blessing-text"></div>
+
+        <div class="actions">
+          <button id="btn-next-blessing">Noch ein Segen?</button>
+          <button id="btn-change-name" class="secondary">Name ändern</button>
+        </div>
+
+        <p class="hint" style="margin-top: 14px;">
+          Dieser Segen gehört zum aktuellen Monat. Wenn du später im Jahr wiederkommst, wartet ein anderer Monatsspruch auf dich.
+        </p>
+      </section>
     </main>
 
     <footer>
-      <span class="muted">© Gemeinde – frei verwendbar in Kirche & Schule.</span>
-      <img src="Gemeindelogo Regenbogen.png" alt="Logo klein" style="height:32px" />
+      <span>© Evangelische Kirchengemeinde – „Segen to go“ 2025/2026.</span>
+      <img src="Gemeindelogo Regenbogen.png" alt="Gemeindelogo klein">
     </footer>
   </div>
 
   <script>
-    const $ = sel => document.querySelector(sel);
-    const params = new URLSearchParams(location.search);
+    const $ = (sel) => document.querySelector(sel);
 
-    function mulberry32(a){return function(){let t=a+=0x6D2B79F5; t=Math.imul(t ^ t>>>15, t | 1); t^=t+Math.imul(t ^ t>>>7, t | 61); return ((t ^ t>>>14)>>>0) / 4294967296}}
+    // --- KONFIGURATION FÜR DEZ 2025 + MONATE 2026 --------------------------
 
-    const blessings = [
-      "Hey {{name}}, Gott gibt dir Rückenwind – damit du nicht aufgibst, wenn’s schwer wird.",
-      "Gott sieht dich. Du bist genug. Geh raus und bring ein Stück Liebe in diese Welt.",
-      "Der Herr segne deine Augen: damit du merkst, wo andere übersehen werden.",
-      "Gott macht dein Herz weit – damit du mutig auf Leute zugehst, die allein dastehen.",
-      "Christus ist bei dir, wenn du zweifelst. Er schenkt dir Mut, trotzdem weiterzugehen.",
-      "Gott segne deinen Mund – dass du nicht schweigst, wenn jemand fertiggemacht wird.",
-      "Du bist von Gott geliebt – unverhandelbar. Und genau das macht dich frei.",
-      "Gott legt dir ein Licht ins Herz, das heller ist als jedes Dunkel um dich herum.",
-      "Der Heilige Geist füllt dich mit Kraft – und gibt dir die Worte, die gerade gebraucht werden.",
-      "Hey {{name}}, Gott vertraut dir zu: Du kannst ein Unterschied sein. Heute.",
-      "Gott schenke dir Freunde, die echt sind – und den Mut, selbst ein echter Freund zu sein.",
-      "{{name}}, vergiss nicht: Gott freut sich über dich – so wie du bist, nicht erst, wenn du perfekt bist.",
-      "Der Herr gebe dir Power für deine Träume und Gelassenheit für deine Sorgen.",
-      "Gott segne deine Hände, dass sie helfen, aufbauen, trösten – nicht zerstören.",
-      "Christus gehe mit dir in deine Schule, deine Clique, dein Zuhause – du bist nie allein.",
-      "Gott segne dein Lachen – dass es ansteckt und Hoffnung verbreitet.",
-      "Der Heilige Geist schenke dir neue Ideen, wenn du festhängst – und Ruhe, wenn alles zu viel wird.",
-      "Gott segne deine Schritte – auch wenn du Umwege gehst, er führt dich.",
-      "Hey {{name}}, Gott füllt dich mit Liebe, damit du sie weitergeben kannst – ganz praktisch, jeden Tag.",
-      "Der Herr schenke dir ein Herz, das größer ist als dein Stolz, und stärker als deine Angst.",
-      "Gott sei dein Schutz, wenn du angegriffen wirst – und deine Stärke, wenn du für andere einstehst.",
-      "Christus halte dich fest, wenn du schwankst, und schicke dir Menschen, die dich aufrichten.",
-      "Gott segne dich mit Freude, die tiefer geht als Likes und schneller ist als Sorgen.",
-      "Der Heilige Geist gebe dir Fantasie, die Welt zu verändern – Schritt für Schritt.",
-      "{{name}}, Gott segne deine Stimme – dass sie klar sagt, was gerecht und liebevoll ist.",
-      "Der Herr begleite dich – wenn du rausgehst, heimkommst und mittendrin lebst.",
-      "Gott schenke dir Augen, die Schönheit sehen, und Füße, die nicht müde werden, ihr nachzugehen.",
-    ];
+    const monthData = (function() {
+      // Vorlauf: Dezember 2025
+      const dec2025 = {
+        key: "2025-12",
+        label: "Dezember 2025",
+        verseText:
+          "Gott spricht: Euch aber, die ihr meinen Namen fürchtet, soll aufgehen die Sonne der Gerechtigkeit und Heil unter ihren Flügeln.",
+        verseRef: "Maleachi 3,20",
+        blessings: [
+          "{{Name}}, das Volk, das im Dunkeln lebt, sieht ein großes Licht. (Jesaja 9,1)",
+          "Der HERR ist dein Licht und dein Heil – vor wem solltest du dich fürchten? (Psalm 27,1)",
+          "Mache dich auf und werde licht, denn dein Licht kommt, und die Herrlichkeit des HERRN geht auf über dir. (Jesaja 60,1)",
+          "Das Licht scheint in der Finsternis, und die Finsternis hat es nicht ergriffen. (Johannes 1,5)",
+          "{{Name}}, Gott breitet seine Flügel über dir aus. Was hinter dir liegt, darf ruhen. Was kommt, steht unter seinem Licht.",
+          "Gott schenke dir Licht in dunklen Tagen und Wärme, wo dein Herz müde geworden ist.",
+          "{{Name}}, Gott geht dir entgegen – nicht laut, nicht hektisch, sondern wie ein Licht, das langsam heller wird.",
+          "Gott segne deinen Übergang vom alten ins neue Jahr – behütet, getragen, geliebt."
+        ]
+      };
 
-    function formatBlessing(tpl, name){
-      return tpl.replaceAll("{{name}}", name || "").trim();
+      // Monate 2026 in Reihenfolge Jan–Dez
+      const months2026 = [
+        // Januar
+        {
+          key: "2026-01",
+          label: "Januar 2026",
+          verseText:
+            "Du sollst den HERRN, deinen Gott, lieben mit ganzem Herzen, mit ganzer Seele und mit ganzer Kraft.",
+          verseRef: "5. Mose 6,5",
+          blessings: [
+            "{{Name}}, der HERR segne dich und behüte dich. Der HERR lasse sein Angesicht leuchten über dir und sei dir gnädig. (4. Mose 6,24–26)",
+            "Vertraue dem HERRN von ganzem Herzen und verlass dich nicht auf deinen Verstand. (Sprüche 3,5)",
+            "Seid stark und mutig! Fürchte dich nicht und hab keine Angst, denn der HERR, dein Gott, ist mit dir auf all deinen Wegen. (Josua 1,9)",
+            "Gott ist Liebe; und wer in der Liebe bleibt, bleibt in Gott und Gott bleibt in ihm. (1. Johannes 4,16)",
+            "{{Name}}, Gott geht mit dir ins neue Jahr – mit allem, was vor dir liegt, und allem, was du noch nicht überblickst.",
+            "Gott schenke dir einen Anfang, der nicht perfekt sein muss, aber getragen ist von Vertrauen.",
+            "{{Name}}, Gott gibt dir Kraft für das, was heute ansteht, und Ruhe für das, was noch warten darf.",
+            "Gott segne dein neues Jahr mit offenen Wegen, warmen Begegnungen und einem Herzen, das lieben kann."
+          ]
+        },
+
+        // Februar
+        {
+          key: "2026-02",
+          label: "Februar 2026",
+          verseText:
+            "Du sollst fröhlich sein und dich freuen über alles Gute, das der HERR, dein Gott, dir und deiner Familie gegeben hat.",
+          verseRef: "5. Mose 26,11",
+          blessings: [
+            "Freut euch allezeit! Betet ohne Unterlass! Danket Gott in allen Dingen. (1. Thessalonicher 5,16–18)",
+            "Lobe den HERRN, meine Seele, und vergiss nicht, was er dir Gutes getan hat. (Psalm 103,2)",
+            "Alle guten Gaben kommen her von Gott, dem HERRN. (Jakobus 1,17)",
+            "Der HERR hat Großes an uns getan, des sind wir fröhlich. (Psalm 126,3)",
+            "{{Name}}, Gott öffne dir die Augen für das Gute in deinem Leben – auch für das Kleine, das leicht übersehen wird.",
+            "Gott segne dich mit Momenten, in denen dein Herz leicht wird und du spürst: Ich bin beschenkt.",
+            "{{Name}}, Gott lege Dankbarkeit in dein Herz – nicht als Pflicht, sondern als Quelle von Freude.",
+            "Gott schenke dir einen Blick, der das Dunkle ernst nimmt und das Helle trotzdem findet."
+          ]
+        },
+
+        // März
+        {
+          key: "2026-03",
+          label: "März 2026",
+          verseText: "Da weinte Jesus.",
+          verseRef: "Johannes 11,35",
+          blessings: [
+            "{{Name}}, der HERR ist nahe denen, die zerbrochenen Herzens sind, und hilft denen, die ein zerschlagenes Gemüt haben. (Psalm 34,19)",
+            "Der HERR sammelt deine Tränen in seinen Krug. (vgl. Psalm 56,9)",
+            "Weint mit den Weinenden. (Römer 12,15)",
+            "Siehe, ich bin bei euch alle Tage bis an das Ende der Welt. (Matthäus 28,20)",
+            "{{Name}}, Gott hält deine Tränen aus. Du musst nichts verstecken. Er ist dir näher, als du denkst.",
+            "Jesus weint. Und ist dir darin näher, als viele Worte es könnten.",
+            "{{Name}}, Gott setzt sich zu dir. Ohne viele Worte. Aber mit offener Nähe.",
+            "Gott segne dich in deinen schweren Momenten – nicht mit schnellen Antworten, sondern mit seiner Gegenwart."
+          ]
+        },
+
+        // April
+        {
+          key: "2026-04",
+          label: "April 2026",
+          verseText:
+            "Jesus spricht zu Thomas: Weil du mich gesehen hast, darum glaubst du? Selig sind, die nicht sehen und doch glauben!",
+          verseRef: "Johannes 20,29",
+          blessings: [
+            "{{Name}}, der Glaube ist eine feste Zuversicht auf das, was man hofft, und ein Nichtzweifeln an dem, was man nicht sieht. (Hebräer 11,1)",
+            "Selig sind, die nicht sehen und doch glauben. (Johannes 20,29)",
+            "Vertraue auf den HERRN und tu das Gute. (Psalm 37,3)",
+            "Gott hat uns nicht gegeben den Geist der Furcht, sondern der Kraft, der Liebe und der Besonnenheit. (2. Timotheus 1,7)",
+            "{{Name}}, Gott verlangt keinen perfekten Glauben. Ein offenes Herz genügt.",
+            "Zweifel schließen Gott nicht aus. Manchmal sind sie der Anfang von Vertrauen.",
+            "{{Name}}, Gott geht mit dir weiter, auch wenn du nicht alles siehst – Schritt für Schritt.",
+            "Gott segne deinen Glauben – so wie er heute ist. Nicht größer. Nicht kleiner."
+          ]
+        },
+
+        // Mai
+        {
+          key: "2026-05",
+          label: "Mai 2026",
+          verseText:
+            "Die Hoffnung haben wir als einen sicheren und festen Anker unserer Seele.",
+          verseRef: "Hebräer 6,19",
+          blessings: [
+            "Der Gott der Hoffnung erfülle euch mit aller Freude und allem Frieden im Glauben, damit ihr immer reicher werdet an Hoffnung. (Römer 15,13)",
+            "{{Name}}, bei Gott findet deine Seele Halt, wie ein Schiff an einem sicheren Ankerplatz.",
+            "Meine Seele ist stille zu Gott; denn er ist meine Hilfe. (Psalm 62,2)",
+            "Lasst uns festhalten an dem Bekenntnis der Hoffnung und nicht wanken; denn Gott ist treu. (Hebräer 10,23)",
+            "{{Name}}, Gott sei dein Anker im Sturm und dein Rückenwind in ruhigen Tagen.",
+            "Gott schenke dir Hoffnung, die tiefer reicht als deine Sorgen und länger hält als deine Zweifel."
+          ]
+        },
+
+        // Juni
+        {
+          key: "2026-06",
+          label: "Juni 2026",
+          verseText:
+            "Denkt an die Gefangenen, als wäret ihr mitgefangen; denkt an die Misshandelten, denn auch ihr lebt noch in eurem irdischen Leib!",
+          verseRef: "Hebräer 13,3",
+          blessings: [
+            "Denkt an die Gefangenen, als wärt ihr mitgefangen. (Hebräer 13,3)",
+            "{{Name}}, was ihr einem meiner geringsten Geschwister getan habt, das habt ihr mir getan. (Matthäus 25,40)",
+            "Einer trage des anderen Last, so werdet ihr das Gesetz Christi erfüllen. (Galater 6,2)",
+            "Ein jeder sehe nicht auf das Seine, sondern auch auf das, was dem andern dient. (Philipper 2,4)",
+            "{{Name}}, Gott schenke dir ein Herz, das nicht wegschaut, und Hände, die helfen können.",
+            "Gott segne deine Sensibilität für Menschen, die an den Rand gedrängt werden.",
+            "{{Name}}, Gott gebe dir Mut, dich an die Seite derer zu stellen, die keine Stimme haben."
+          ]
+        },
+
+        // Juli
+        {
+          key: "2026-07",
+          label: "Juli 2026",
+          verseText:
+            "Es ströme aber das Recht wie Wasser und die Gerechtigkeit wie ein nie versiegender Bach.",
+          verseRef: "Amos 5,24",
+          blessings: [
+            "{{Name}}, lernt Gutes tun, trachtet nach Recht, helft den Unterdrückten. (Jesaja 1,17)",
+            "Glücklich sind, die nach Gerechtigkeit hungern und dürsten; denn sie sollen satt werden. (Matthäus 5,6)",
+            "Was der HERR von dir fordert, ist dies: Recht tun, Güte lieben und demütig sein vor deinem Gott. (Micha 6,8)",
+            "{{Name}}, Gott schenke dir ein feines Gespür für das, was fair ist, und den Mut, dafür einzustehen.",
+            "Gott segne dich mit einem Herzen, das nicht schweigt, wenn Unrecht geschieht.",
+            "{{Name}}, Gott mache dich zu einem leisen, aber klaren Strom seiner Gerechtigkeit."
+          ]
+        },
+
+        // August
+        {
+          key: "2026-08",
+          label: "August 2026",
+          verseText:
+            "Jesus Christus spricht: Ich bin gekommen, damit sie das Leben haben und es in Fülle haben.",
+          verseRef: "Johannes 10,10",
+          blessings: [
+            "{{Name}}, bei Gott ist die Quelle des Lebens. In seinem Licht siehst du das Licht. (Psalm 36,10)",
+            "Du zeigst mir den Weg zum Leben. Vor dir ist Freude die Fülle. (Psalm 16,11)",
+            "Ich lebe, doch nun nicht ich, sondern Christus lebt in mir. (Galater 2,20)",
+            "{{Name}}, Gott segne deine Freude, deine Träume und alles, was dein Herz zum Leuchten bringt.",
+            "Gott bewahre dich davor, dich klein zu machen – du bist geschaffen zum Leben in Fülle.",
+            "{{Name}}, Gott schenke dir Menschen, Orte und Momente, in denen du spürst: Das ist echtes Leben."
+          ]
+        },
+
+        // September
+        {
+          key: "2026-09",
+          label: "September 2026",
+          verseText:
+            "Besser eine Hand voll mit Ruhe als beide Fäuste voll mit Mühe und Haschen nach Wind.",
+          verseRef: "Prediger 4,6",
+          blessings: [
+            "{{Name}}, in Umkehr und Ruhe liegt eure Stärke. (vgl. Jesaja 30,15)",
+            "Seid still und erkennt, dass ich Gott bin. (Psalm 46,11)",
+            "Kommt her zu mir, alle, die ihr mühselig und beladen seid; ich will euch Ruhe geben. (Matthäus 11,28)",
+            "{{Name}}, Gott segne deine Pausen, damit du wieder atmen kannst.",
+            "Gott schenke dir den Mut, nicht alles vollzupacken – weniger tun, tiefer leben.",
+            "{{Name}}, Gott bremse deine inneren Hamsterräder und schenke dir einen weiten Horizont."
+          ]
+        },
+
+        // Oktober
+        {
+          key: "2026-10",
+          label: "Oktober 2026",
+          verseText:
+            "Zur Freiheit hat uns Christus befreit! So steht nun fest und lasst euch nicht wieder das Joch der Knechtschaft auflegen!",
+          verseRef: "Galater 5,1",
+          blessings: [
+            "{{Name}}, wo der Geist des Herrn ist, da ist Freiheit. (2. Korinther 3,17)",
+            "Ihr seid zur Freiheit berufen, Geschwister. (Galater 5,13)",
+            "Wenn euch der Sohn frei macht, so seid ihr wirklich frei. (Johannes 8,36)",
+            "{{Name}}, Gott befreie dich von Stimmen, die dich klein machen – innen und außen.",
+            "Gott segne dich mit der Freiheit, du selbst zu sein, so wie er dich gedacht hat.",
+            "{{Name}}, Gott löse dich von dem Druck, allem entsprechen zu müssen – seine Liebe gilt dir schon."
+          ]
+        },
+
+        // November
+        {
+          key: "2026-11",
+          label: "November 2026",
+          verseText:
+            "Der HERR wird Recht schaffen zwischen den Nationen und viele Völker zurechtweisen. Dann werden sie ihre Schwerter zu Pflugscharen umschmieden und ihre Lanzen zu Winzermessern. Sie erheben nicht das Schwert, Nation gegen Nation, und sie erlernen nicht mehr den Krieg.",
+          verseRef: "Jesaja 2,4",
+          blessings: [
+            "{{Name}}, selig sind, die Frieden stiften; denn sie werden Gottes Kinder heißen. (Matthäus 5,9)",
+            "Lass dich nicht vom Bösen überwinden, sondern überwinde das Böse mit Gutem. (Römer 12,21)",
+            "Suche den Frieden und jage ihm nach. (Psalm 34,15)",
+            "{{Name}}, Gott segne deinen Wunsch nach Frieden – in dir, in deinen Beziehungen, in der Welt.",
+            "Gott schenke dir Kraft, Brücken zu bauen, wo andere Mauern hochziehen.",
+            "{{Name}}, Gott mache dich zu einem Zeichen seiner Hoffnung mitten in einer verletzten Welt."
+          ]
+        },
+
+        // Dezember
+        {
+          key: "2026-12",
+          label: "Dezember 2026",
+          verseText:
+            "Kuh und Bärin werden zusammen weiden, ihre Jungen beieinanderliegen, und der Löwe wird Stroh fressen wie das Rind.",
+          verseRef: "Jesaja 11,7",
+          blessings: [
+            "{{Name}}, ein Kind ist uns geboren, ein Sohn ist uns gegeben. (Jesaja 9,5)",
+            "Ehre sei Gott in der Höhe und Friede auf Erden bei den Menschen seines Wohlgefallens. (Lukas 2,14)",
+            "Der Gott der Hoffnung erfülle euch mit aller Freude und allem Frieden im Glauben. (Römer 15,13)",
+            "{{Name}}, Gott segne deine Sehnsucht nach einer Welt, in der Feinde zu Freunden werden.",
+            "Gott schenke dir in dieser Zeit Momente, in denen du seinen Frieden ganz still spürst.",
+            "{{Name}}, Gott mache dein Herz weit, damit du staunen kannst über sein Kommen in diese Welt – und in dein Leben."
+          ]
+        }
+      ];
+
+      return { dec2025, months2026 };
+    })();
+
+    // --- HILFSFUNKTIONEN ----------------------------------------------------
+
+    function formatName(nameRaw) {
+      const n = (nameRaw || "").trim();
+      if (!n) return "";
+      // Erstes Wort, erste Buchstaben groß
+      const first = n.split(/\s+/)[0];
+      return first.charAt(0).toUpperCase() + first.slice(1);
     }
-    function pickBlessing(seed, name){
-      const rng = mulberry32(seed);
-      const i = Math.floor(rng()*blessings.length);
-      return formatBlessing(blessings[i], name);
+
+    function pickRandom(arr, excludeIndex) {
+      if (!arr || arr.length === 0) return { index: -1, value: "" };
+      if (arr.length === 1) return { index: 0, value: arr[0] };
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * arr.length);
+      } while (idx === excludeIndex);
+      return { index: idx, value: arr[idx] };
     }
-    function showBlessing(fixedSeed){
-      const name = (params.get('name') || $('#name').value || '').trim();
-      const seedParam = params.get('seed');
-      const seed = fixedSeed ?? (seedParam ? parseInt(seedParam,10) : (crypto.getRandomValues(new Uint32Array(1))[0]));
-      if(!seedParam){
-        const next = new URL(location.href);
-        next.searchParams.set('seed', String(seed));
-        if(name) next.searchParams.set('name', name);
-        history.replaceState({}, '', next);
+
+    function personalize(text, name) {
+      const niceName = name || "";
+      return text.replace(/{{Name}}/g, niceName);
+    }
+
+    function getConfigForToday() {
+      const urlParams = new URLSearchParams(location.search);
+      // Optional: Test-Parameter ?date=2026-05-01
+      const testDateStr = urlParams.get("date");
+      const now = testDateStr ? new Date(testDateStr) : new Date();
+
+      const year = now.getFullYear();
+      const month = now.getMonth(); // 0 = Jan ... 11 = Dez
+
+      // Sonderfall: Dezember 2025 als Vorlauf
+      if (year === 2025 && month === 11) {
+        return monthData.dec2025;
       }
-      const text = pickBlessing(seed, name);
-      $('#output').textContent = text;
-      return { seed, name, text };
+
+      // Standard: Monate 2026 nach aktuellem Monat
+      // (auch noch später nutzbar, dann ist der Kalender „zeitlos“)
+      const idx = month; // 0–11
+      const data = monthData.months2026[idx] || monthData.months2026[0];
+      return data;
     }
 
-    let qrInstance = null;
-    function ensureQR(){
-      const box = $('#qr');
-      box.innerHTML = '';
-      qrInstance = new QRCode(box, { text: $('#url').value || location.href, width: 200, height: 200 });
-    }
-    function downloadQR(){
-      const img = $('#qr').querySelector('img') || $('#qr').querySelector('canvas');
-      if(!img) return;
-      const link = document.createElement('a');
-      link.download = 'qr-segen.png';
-      link.href = img.src || img.toDataURL();
-      link.click();
+    // --- ZUSTAND ------------------------------------------------------------
+
+    const state = {
+      name: "",
+      currentConfig: null,
+      lastBlessingIndex: -1
+    };
+
+    // --- VIEW-STEUERUNG -----------------------------------------------------
+
+    function showView(id) {
+      $("#view-start").classList.remove("view--active");
+      $("#view-blessing").classList.remove("view--active");
+      $(id).classList.add("view--active");
     }
 
-    async function copyBlessing(){
-      const txt = $('#output').textContent.trim();
-      try{ await navigator.clipboard.writeText(txt); alert('Segen kopiert.'); } catch{ alert('Bitte Text manuell markieren.'); }
-    }
-    async function shareLink(){
-      const url = location.href;
-      const title = 'Segen to go';
-      const text = $('#output').textContent.trim();
-      if(navigator.share){ try{ await navigator.share({title, text, url}); } catch(_){} }
-      else { try{ await navigator.clipboard.writeText(url); alert('Link kopiert: ' + url); } catch{ alert(url); } }
+    function renderBlessingView(newMonthConfig) {
+      const cfg = newMonthConfig || state.currentConfig || getConfigForToday();
+      state.currentConfig = cfg;
+
+      $("#month-label").textContent = cfg.label;
+      $("#month-verse-text").textContent = cfg.verseText;
+      $("#month-verse-ref").textContent = cfg.verseRef;
+
+      // Name-Badge
+      if (state.name) {
+        $("#name-badge-text").textContent = state.name;
+        $("#name-badge").style.display = "inline-flex";
+      } else {
+        $("#name-badge").style.display = "none";
+      }
+
+      // Einen Segen auswählen
+      const { index, value } = pickRandom(cfg.blessings, state.lastBlessingIndex);
+      state.lastBlessingIndex = index;
+      $("#blessing-text").textContent = personalize(value, state.name);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const nameFromUrl = params.get('name');
-      if(nameFromUrl) $('#name').value = nameFromUrl;
-      const seedParam = params.get('seed');
-      const initialSeed = seedParam ? parseInt(seedParam,10) : undefined;
-      showBlessing(initialSeed);
-      $('#btn-new').addEventListener('click', () => showBlessing());
-      $('#btn-copy').addEventListener('click', copyBlessing);
-      $('#btn-share').addEventListener('click', shareLink);
-      $('#url').value = location.href;
-      $('#btn-qr').addEventListener('click', ensureQR);
-      $('#btn-qr-dl').addEventListener('click', downloadQR);
-      ensureQR();
+    // --- INITIALISIERUNG ----------------------------------------------------
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(location.search);
+      const presetName = formatName(urlParams.get("name"));
+
+      if (presetName) {
+        state.name = presetName;
+        $("#name-input").value = presetName;
+        $("#name-badge-text").textContent = presetName;
+      }
+
+      // Klick: Weiter zum Segen
+      $("#btn-start").addEventListener("click", () => {
+        const rawName = $("#name-input").value;
+        state.name = formatName(rawName);
+        state.lastBlessingIndex = -1;
+        renderBlessingView(getConfigForToday());
+        showView("#view-blessing");
+      });
+
+      // „Noch ein Segen?“
+      $("#btn-next-blessing").addEventListener("click", () => {
+        renderBlessingView();
+      });
+
+      // Name ändern
+      $("#btn-change-name").addEventListener("click", () => {
+        showView("#view-start");
+        setTimeout(() => {
+          $("#name-input").focus();
+        }, 50);
+      });
+
+      // Falls ?name=… in der URL steht, direkt Segen anzeigen
+      if (presetName) {
+        state.lastBlessingIndex = -1;
+        renderBlessingView(getConfigForToday());
+        showView("#view-blessing");
+      }
     });
   </script>
 </body>
 </html>
-
